@@ -30,10 +30,10 @@ const sections=[
 ];
 const pigments=[
  ['blanco','Blanco',2446],['naranja','Naranja',13446],['amarillo','Amarillo',4783],
- ['violeta','Violeta',9864],['lila','Lila',13046],['marron','Marrón',1880],
+ ['violeta','Violeta',9864],['lila','Lila',13046],['marron-claro','Marrón claro',3122],
  ['rojos','Rojos',15094],['rosa','Rosa',5125],['azul-cobalto','Azul cobalto',11254],
- ['gris-topo','Gris topo',4284],['verde-cromo','Verde cromo',3443],
- ['verde-manzana','Verde manzana',5028],['verde-menta','Verde menta',4682],['negro','Negro',4947]
+ ['gris-topo','Gris topo',4284],['turquesa','Turquesa',8528],['chocolate','Chocolate',6651],
+ ['verde-manzana','Verde brillante',5028],['verde-agua','Verde agua',6743],['negro','Negro',4947]
 ];
 const ids=['margin'];
 const options={clayPrice:.01,clayKg:.001,clayGrams:.01,glazePrice:.01,glazeKg:.001,h:.1,w:.1,d:.1,kw:.1,kh:.1,usable:1,load:1,kwh:.01,rate:.01,firings:1};
@@ -66,7 +66,13 @@ for(const [key,name,price] of pigments){
 }
 $('inputs').insertBefore(paintSection,$('inputs').children[3]);
 const storageKey='horno-piece-cost-v1';
-try{const saved=JSON.parse(localStorage.getItem(storageKey)||'{}');ids.forEach(id=>{if($(id).type==='checkbox'){if(typeof saved[id]==='boolean')$(id).checked=saved[id]}else if(typeof saved[id]==='string')$(id).value=saved[id]});$('saved').textContent='Los valores se guardan en este navegador.'}catch{$('saved').textContent='No se pudieron recuperar los valores guardados.'}
+try{const saved=JSON.parse(localStorage.getItem(storageKey)||'{}');
+ // Preserve the renamed brown's selection and usage, but use its corrected price.
+ for(const suffix of ['', '-percent']){
+  const next='pigment-marron-claro'+suffix,previous='pigment-marron'+suffix;
+  if(saved[next]===undefined&&saved[previous]!==undefined)saved[next]=saved[previous];
+ }
+ ids.forEach(id=>{if($(id).type==='checkbox'){if(typeof saved[id]==='boolean')$(id).checked=saved[id]}else if(typeof saved[id]==='string')$(id).value=saved[id]});$('saved').textContent='Los valores se guardan en este navegador.'}catch{$('saved').textContent='No se pudieron recuperar los valores guardados.'}
 const money=n=>new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n);
 function render(){
  const v=Object.fromEntries(ids.map(id=>[id,$(id).tagName==='SELECT'?$(id).value:($(id).value===''?NaN:Number($(id).value))]));v.kiln='round';
